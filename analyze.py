@@ -1,20 +1,32 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
------------------------------------------------------------------------------
+'''
+--------------------------------------------------------------------------
 Submission for the SRC FTBL take-home task for the Data Scientist position
-  Identifies possible corner kick situations in the given SkillCorner dataset
------------------------------------------------------------------------------
+--------------------------------------------------------------------------
 :author: Emily Chen
 :date:   May 2023
 
+Visualizes the output of identify_corner_kicks() as animated gifs
+to facilitate tactical analysis
+  * RED dot    = ball
+  * BLUE dot   = home team
+  * ORANGE dot = away team
+  * BLACK dot  = unknown team
+
+Script contains one helper function:
+  1. get_player_ids() 
+       Gets each player's tracking ID and assigns the player
+       to either the home team or away team
+
+Outputs a directory '[GAME ID]_analysis' that stores the animated gifs
 
 REQUIREMENTS: pandas, numpy, matplotlib, ffmpeg
 
 USAGE: python3 analyze.py [path-to-dir-containing-match-data]
   e.g. python3 analyze.py data/matches/3442
 
-"""
+'''
 from identify_corners import identify_corner_kicks
 
 import argparse
@@ -32,8 +44,8 @@ from matplotlib.animation import FuncAnimation
 
 
 # for debugging purposes
-pd.set_option("display.max_columns", None)
-np.set_printoptions(threshold=sys.maxsize)
+#pd.set_option("display.max_columns", None)
+#np.set_printoptions(threshold=sys.maxsize)
 
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
@@ -47,7 +59,7 @@ def get_player_ids(match_info):
     :rtype:  list
 
     Gets each player's tracking ID stored in "trackable_object"
-    and assigns them to either the home team or away team.
+    and assigns the player to either the home team or away team
 
     '''
     home_team_id = match_info["home_team"]["id"]
@@ -67,7 +79,8 @@ def get_player_ids(match_info):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('match_dir', help='path to directory containing match_data.json and structured_data.json')
+    parser.add_argument('match_dir', help='path to directory containing match_data.json \
+                                           and structured_data.json')
     args = parser.parse_args()
 
     # creates a folder 'analysis' to store output
@@ -115,7 +128,7 @@ def main():
         minute = int(kick["time"].split(":")[0])
 
         # logs the team ('home' or 'away') of each trackable object
-        #   assists with color-coding players in animated gif
+        # to assist with color-coding players in animated gif
         team_assignment = pd.DataFrame()
 
         if prev_min != minute:
@@ -158,7 +171,7 @@ def main():
                 # check if there's tracking data and a trackable object
                 if data and any("trackable_object" in elem for elem in data):
     
-                    # get the id, x-y coordinates of the trackable object
+                    # get the id and x-y coordinates of the trackable object
                     for elem in data:
                         if "trackable_object" in elem:
                             tracking_id = elem["trackable_object"]
@@ -202,13 +215,12 @@ def main():
             colors = {"ball": "red", "home": "blue", "away": "orange", "unknown": "black"}
             team_colors = team_assignment.squeeze().map(colors)
     
-            # initialize figure for scatterplot
-            # mark x-y axes
+            # initialize figure for scatterplot and mark x-y axes
             fig = plt.figure()
             ax = plt.axes(xlim=(-52.5,52.5), ylim=(-34,34))
 
             scatterplot = ax.scatter(x_over_time[0], y_over_time[0], \
-                                     s=8, c=team_colors)
+                                     s=9, c=team_colors)
     
             def update(frame_number):
                 x = x_over_time[frame_number]
@@ -222,7 +234,7 @@ def main():
                 scatterplot.set_offsets(x_y)
                 return scatterplot,
     
-            anim = FuncAnimation(fig, update, interval=1)
+            anim = FuncAnimation(fig, update, interval=10)
             anim.save(dirname + "/minute_" + str(minute) + ".gif", writer = "ffmpeg", fps = 10)
 
             prev_min = minute

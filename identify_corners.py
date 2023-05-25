@@ -1,21 +1,23 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 '''
------------------------------------------------------------------------------
+--------------------------------------------------------------------------
 Submission for the SRC FTBL take-home task for the Data Scientist position
-  Identifies possible corner kick situations in the given SkillCorner dataset
------------------------------------------------------------------------------
+--------------------------------------------------------------------------
 :author: Emily Chen
 :date:   May 2023
 
+Identifies possible corner kick situations in the SkillCorner dataset
+
 Script contains two helper functions:
   1. identify_corner_kicks()
-      A rule-based model that identifies possible corner kicks,
-      given the x-y coordinates of the soccer ball
+       A rule-based model that identifies possible corner kicks,
+       given the x-y coordinates of the ball or number of players
+       in the 18-yard box
 
   2. write_out_to_csv()
-      Writes the output of identify_corner_kicks() to a three-column csv file
-      listing the 'frame', the corner-taking 'team', and the 'time'
+       Writes the output of identify_corner_kicks() to a three-column
+       csv file, listing the frame, the corner-taking team, and the time
 
 Outputs a directory 'corners' that stores the csv file for each game
 
@@ -33,7 +35,7 @@ import pandas as pd
 
 
 # for debugging purposes
-pd.set_option('display.max_columns', None)
+#pd.set_option('display.max_columns', None)
 
 def identify_corner_kicks(df):
     '''
@@ -51,7 +53,7 @@ def identify_corner_kicks(df):
 
     for frame in range(len(df)):
     
-        tracking_data = df['data'].iloc[frame]
+        tracking_data = df["data"].iloc[frame]
     
         # check if there's tracking data
         if tracking_data and any("trackable_object" in elem for elem in tracking_data):
@@ -60,7 +62,7 @@ def identify_corner_kicks(df):
 
             # check if there's a trackable object and if object is the ball
             for elem in tracking_data:
-                if "trackable_object" in elem and elem['trackable_object'] == 55:
+                if "trackable_object" in elem and elem["trackable_object"] == 55:
     
                     # absolute value of the x-y coordinates of the ball
                     x_coord = abs(elem["x"])
@@ -79,8 +81,8 @@ def identify_corner_kicks(df):
 
                 # check number of trackable objects within 18-yard box
                 if "trackable_object" in elem:
-                    x_coord = abs(elem['x'])
-                    y_coord = abs(elem['y'])
+                    x_coord = abs(elem["x"])
+                    y_coord = abs(elem["y"])
 
                     if x_coord >= 36 and x_coord <= 52.5 and \
                        y_coord >= 0  and y_coord <= 21.16:
@@ -101,14 +103,14 @@ def write_out_to_csv(dirname, match_data, corners):
     :param corners: possible corner kick situations
     :type  corners: list of pandas dataframes
 
-    Writes the output of identify_corner_kicks() to a three-column csv file
+    Writes the output of identify_corner_kicks() to a three-column csv file,
     listing the 'frame', the corner-taking 'team', and the 'time'
 
     '''
-    date      = str(match_data['date_time'])
-    home_team = match_data['home_team']['name'].replace(" ","_")
-    away_team = match_data['away_team']['name'].replace(" ","_")
-    match_id  = str(match_data['id'])
+    date      = str(match_data["date_time"])
+    home_team = match_data["home_team"]["name"].replace(" ","_")
+    away_team = match_data["away_team"]["name"].replace(" ","_")
+    match_id  = str(match_data["id"])
    
     filename  = dirname + "/" + match_id + "_" + home_team + "(H)_" + \
                away_team + "(A)_" + date + ".csv"
@@ -118,12 +120,12 @@ def write_out_to_csv(dirname, match_data, corners):
         writer.writerow(["Frame", "Team", "Time"])
 
         for df in corners:
-            if df['possession']['group'] == "home team":
-                writer.writerow([df['frame'], home_team, df['time']])
-            elif df['possession']['group'] == "away team":
-                writer.writerow([df['frame'], away_team, df['time']])
+            if df["possession"]["group"] == "home team":
+                writer.writerow([df["frame"], home_team, df["time"]])
+            elif df["possession"]["group"] == "away team":
+                writer.writerow([df["frame"], away_team, df["time"]])
             else:
-                writer.writerow([df['frame'], "n/a", df['time']])
+                writer.writerow([df["frame"], "n/a", df["time"]])
 
 
 def main():
@@ -131,7 +133,7 @@ def main():
     # creates a folder 'corners' to store output, i.e.
     #   csv files listing frames and time stamps of
     #   the corner kicks from each game
-    dirname = 'corners'
+    dirname = "corners"
     if os.path.exists(dirname):
         for root, dirs, files in os.walk(dirname):
             for name in files:
@@ -141,8 +143,7 @@ def main():
         os.rmdir(dirname)
     os.mkdir(dirname)
 
-#    for jsonfile in glob.glob('data/matches/2440/*.json'):
-    for jsonfile in glob.glob('data/matches/*/*.json'):
+    for jsonfile in glob.glob("data/matches/*/*.json"):
         with open(jsonfile, 'r') as json_data:
 
             basename = jsonfile.rsplit("/", 1)[1]
