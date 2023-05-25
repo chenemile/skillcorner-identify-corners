@@ -56,34 +56,38 @@ def identify_corner_kicks(df):
         # check if there's tracking data
         if tracking_data and any("trackable_object" in elem for elem in tracking_data):
     
-#            num_obj = 0
+            num_obj = 0
 
             # check if there's a trackable object and if object is the ball
             for elem in tracking_data:
                 if "trackable_object" in elem and elem['trackable_object'] == 55:
     
                     # absolute value of the x-y coordinates of the ball
-                    x_coord = abs(elem['x'])
-                    y_coord = abs(elem['y'])
+                    x_coord = abs(elem["x"])
+                    y_coord = abs(elem["y"])
+                    if "z" in elem:
+                        z_coord = elem["z"]
                     radius  = 1.2
 
                     # pythagorean theorem for circles
                     #   checks if the ball is within radius of corner arc 
                     #   with some leeway given to include radius of the ball
                     if (x_coord - 52.5)**2 + (y_coord - 34)**2 <= radius:
+                        if z_coord > 1:
+                            break
                         possible_corners.append(df.iloc[frame])
 
-#                # check number of trackable objects within 18-yard box
-#                if "trackable_object" in elem:
-#                    x_coord = abs(elem['x'])
-#                    y_coord = abs(elem['y'])
-#
-#                    if x_coord >= 36 and x_coord <= 52.5 and \
-#                       y_coord >= 0  and y_coord <= 21.16:
-#                        num_obj += 1
-#
-#            if num_obj >= 16:
-#                possible_corners.append(df.iloc[frame])
+                # check number of trackable objects within 18-yard box
+                if "trackable_object" in elem:
+                    x_coord = abs(elem['x'])
+                    y_coord = abs(elem['y'])
+
+                    if x_coord >= 36 and x_coord <= 52.5 and \
+                       y_coord >= 0  and y_coord <= 21.16:
+                        num_obj += 1
+
+            if num_obj >= 16:
+                possible_corners.append(df.iloc[frame])
 
     return possible_corners
 
