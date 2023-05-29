@@ -7,23 +7,24 @@ Submission for the SRC FTBL take-home task for the Data Scientist position
 :author: Emily Chen
 :date:   May 2023
 
-Identifies possible corner kick situations in the SkillCorner dataset
+Identifies frames and times of possible corner kicks in the SkillCorner dataset
 
 Script contains two helper functions:
   1. identify_corner_kicks()
-       A rule-based model that identifies possible corner kicks,
-       given the x-y coordinates of the ball or number of players
-       in the 18-yard box
+       A rule-based model that identifies the frames and times of
+       possible corner kicks, given the x-y coordinates of the ball
+       or number of players in the 18-yard box
 
   2. write_out_to_csv()
        Writes the output of identify_corner_kicks() to a three-column
-       csv file, listing the frame, the corner-taking team, and the time
+       csv file, listing the frame, time, and corner-taking team
 
 Outputs a directory 'corners' that stores the csv file for each game
 
 REQUIREMENTS: pandas
 
 USAGE: python3 identify_corners.py
+       Assumes the SkillCorner dataset 'data' is in the same folder
 
 '''
 import csv
@@ -45,8 +46,9 @@ def identify_corner_kicks(df):
     :return: possible_corners
     :rtype:  list of pandas dataframes
 
-    A rule-based model that identifies possible corner kicks,
-    given the x-y coordinates of the soccer ball
+    A rule-based model that identifies the frames and times of
+    possible corner kicks, given the x-y coordinates of the ball
+    or number of players in the 18-yard box
 
     '''
     possible_corners = []

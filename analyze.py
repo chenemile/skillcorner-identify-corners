@@ -7,8 +7,8 @@ Submission for the SRC FTBL take-home task for the Data Scientist position
 :author: Emily Chen
 :date:   May 2023
 
-Visualizes the output of identify_corner_kicks() as animated gifs
-to facilitate tactical analysis
+Visualizes the output of identify_corner_kicks() as animated GIFs
+to facilitate tactical analysis. In each GIF:
   * RED dot    = ball
   * BLUE dot   = home team
   * ORANGE dot = away team
@@ -19,7 +19,7 @@ Script contains one helper function:
        Gets each player's tracking ID and assigns the player
        to either the home team or away team
 
-Outputs a directory '[GAME ID]_analysis' that stores the animated gifs
+Outputs a directory '[GAME ID]_analysis' that stores the animated GIFs
 
 REQUIREMENTS: pandas, numpy, matplotlib, ffmpeg
 
@@ -220,7 +220,9 @@ def main():
             ax = plt.axes(xlim=(-52.5,52.5), ylim=(-34,34))
 
             scatterplot = ax.scatter(x_over_time[0], y_over_time[0], \
-                                     s=9, c=team_colors)
+                                     s=20, c=team_colors)
+            plt.savefig(dirname + "/minute_" + str(minute) + ".png")
+            
     
             def update(frame_number):
                 x = x_over_time[frame_number]

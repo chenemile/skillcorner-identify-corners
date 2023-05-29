@@ -22,6 +22,19 @@ from statistics import mean, median
 
 
 def counts_for_prf(true, pred):
+    '''
+    :param true: actual minutes when corners kicks occurred  
+    :type  true: list
+    :param pred: model-predicted minutes 
+    :type  pred: list
+
+    :return: true_pos, false_pos, false_neg 
+    :rtype:  int
+
+    Counts the number of true positives, false positive, and false
+    negative for precision/recall calculations.
+
+    '''
     true_pos  = 0
     false_pos = 0
     false_neg = 0
