@@ -24,7 +24,8 @@ Outputs a directory 'corners' that stores the csv file for each game
 REQUIREMENTS: pandas
 
 USAGE: python3 identify_corners.py
-       Assumes the SkillCorner dataset 'data' is in the same folder
+
+*** ASSUMES THE SkillCorner dataset 'data' IS IN THE SAME FOLDER ***
 
 '''
 import csv
@@ -109,7 +110,7 @@ def write_out_to_csv(dirname, match_data, corners):
     listing the 'frame', the corner-taking 'team', and the 'time'
 
     '''
-    date      = str(match_data["date_time"])
+    date      = str(match_data["date_time"].replace(":","."))
     home_team = match_data["home_team"]["name"].replace(" ","_")
     away_team = match_data["away_team"]["name"].replace(" ","_")
     match_id  = str(match_data["id"])
@@ -132,6 +133,9 @@ def write_out_to_csv(dirname, match_data, corners):
 
 def main():
 
+    if not os.path.exists("data"):
+        raise FileNotFoundError("SkillCorner dataset 'data' was not found")
+
     # creates a folder 'corners' to store output, i.e.
     #   csv files listing frames and time stamps of
     #   the corner kicks from each game
@@ -148,13 +152,14 @@ def main():
     for jsonfile in glob.glob("data/matches/*/*.json"):
         with open(jsonfile, 'r') as json_data:
 
-            basename = jsonfile.rsplit("/", 1)[1]
+            filepath, basename = jsonfile.rsplit("/", 1)
 
             if basename == "match_data.json":
                 match_data = json.load(json_data)
     
             corner_kicks = []
             if basename == "structured_data.json":
+                print("Identifying corners in: " + filepath + "...")
                 tracking_data = pd.read_json(json_data)
                 corner_kicks  = identify_corner_kicks(tracking_data)
             

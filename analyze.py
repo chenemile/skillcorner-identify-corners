@@ -26,6 +26,8 @@ REQUIREMENTS: pandas, numpy, matplotlib, ffmpeg
 USAGE: python3 analyze.py [path-to-dir-containing-match-data]
   e.g. python3 analyze.py data/matches/3442
 
+*** ASSUMES THE SkillCorner dataset 'data' IS IN THE SAME FOLDER ***
+
 '''
 from identify_corners import identify_corner_kicks
 
@@ -124,7 +126,6 @@ def main():
     prev_min = 0
 
     for kick in corner_kicks:
-
         minute = int(kick["time"].split(":")[0])
 
         # logs the team ('home' or 'away') of each trackable object
@@ -132,6 +133,7 @@ def main():
         team_assignment = pd.DataFrame()
 
         if prev_min != minute:
+            print("Animating frame at " + kick["time"] + "...")
 
             # create dataframes that store the frame, time, and x or y coordinates
             # of all the trackable objects in each frame
@@ -221,8 +223,7 @@ def main():
 
             scatterplot = ax.scatter(x_over_time[0], y_over_time[0], \
                                      s=20, c=team_colors)
-            plt.savefig(dirname + "/minute_" + str(minute) + ".png")
-            
+            #plt.savefig(dirname + "/minute_" + str(minute) + ".png")
     
             def update(frame_number):
                 x = x_over_time[frame_number]
